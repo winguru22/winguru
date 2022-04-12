@@ -1,0 +1,234 @@
+<?ph
+$sql = "SELECT * from newgame where RESULT='pending'";
+$result = mysqli_query($conn, $sql);
+$row = mysqli_fetch_assoc($result);
+//echo $row['STARTTIME'] . " ---   ";
+date_default_timezone_set('Asia/Kolkata'); 
+$datetime1 = new DateTime();
+$datetime2 = new DateTime($row['STARTTIME']);
+$interval = $datetime1->diff($datetime2);
+
+$min = $interval->format('%i');
+$sec = $interval->format('%s');
+$timer = ($min * 60) + $sec;
+//echo $timer;
+?>
+<html>
+<head>
+<link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css"></link>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.css"></link>
+<style>
+#wrapper {
+  text-align:center;
+  border:1px solid #7F7F7F;
+  width:150px;
+  margin:25px auto;
+  padding:25px;
+  background-color:#E3E4E4;
+}
+
+#myTimer {
+  font:64px Tahoma bold;
+  padding:20px;
+  display:block;
+}
+
+button {
+  width:125px;
+  padding:10px;
+}
+
+.btnEnable {
+  background-color:#E6F9D2;
+  border:1px solid #97DE4C;
+  color:#232323;
+  cursor:pointer;
+}
+
+.btnDisable {
+  background-color:#FCBABA;
+  border:1px solid #DD3939;
+  color:#232323;
+  /***cursor:wait;***/
+}
+</style>
+<script>
+var hidden, visibilityChange;
+if(typeof document.hidden !== "undefined") {
+  hidden = "hidden";
+  visibilityChange = "visibilitychange";
+}
+else if(typeof document.msHidden !== "undefined") {
+  hidden = "msHidden";
+  visibilityChange = "msvisibilitychange";
+}
+else if(typeof document.webkitHidden !== "undefined") {
+  hidden = "webkitHidden";
+  visibilityChange = "webkitvisibilitychange";
+}
+var tabSwitched = false,
+  leaveTime = 0,
+  timerHandle;
+
+function doTimer() {
+  timerHandle = setTimeout(function() {
+    doTimer();
+    leaveTime++;
+  }, 1000);
+}
+
+function handleVisibilityChange() {
+  if(leaveTime === 0){
+    doTimer();
+  }
+    
+  if(!document[hidden] && leaveTime > 5) {
+    console.log('leaveTime: ' + leaveTime + ' seconds, do action');
+    clearTimeout(timerHandle);
+    leaveTime = 0;
+	window.location.reload();
+  }
+  else if(!document[hidden] && leaveTime < 5){
+    console.log('tab switched before 5 seconds');
+    clearTimeout(timerHandle);
+    leaveTime = 0;
+  }
+}
+
+document.addEventListener(visibilityChange, handleVisibilityChange, false);
+</script>
+
+</head>
+<body>
+    <!-- <div>Registration closes in <span id="time">01:00</span> minutes!</div> -->
+	
+	<div id="time">02 : 30</div>
+	<button type="button" id="myBtn" class="myBtn btnEnable" onclick="alert('Finally!')">Click Me</button>
+	<button type="button" id="myBtn" class="myBtn btnEnable" onclick="alert('Finally!')">Click </button>
+	<?php echo $row['STARTTIME']?>
+
+	
+	      <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+	      <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.js"></script>
+
+	<script>
+
+
+function startTimer(duration, display) {
+var timer = duration, minutes, seconds;
+setInterval(function () {
+    minutes = parseInt(timer / 60)
+    seconds = parseInt(timer % 60);
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    display.textContent = minutes + " :" + " " + seconds;
+
+    if (--timer < 0) {
+        timer = duration;
+    }
+	
+	if (timer <= 30) {
+		$(".myBtn").attr('disabled','disabled');
+		$(".myBtn").addClass('btnDisable').removeClass("btnEnable");
+		//$("#myTimer").fadeTo(2500, 0);
+		myBtn.innerHTML = "Can't click now";
+		return;
+	}else if(timer > 30) {
+		$(".myBtn").removeAttr('disabled');
+		$(".myBtn").addClass('btnEnable').removeClass("btnDisable");
+		//$("#myTimer").fadeTo(2500, 0);
+		myBtn.innerHTML = "click now";
+		return;
+	}else {
+		//window.location.reload();
+		console.log(timer)
+	}
+	
+  //console.log(timer)
+  //console.log(seconds)
+  //console.log(minutes)
+  
+  //window.localStorage.setItem("seconds",seconds)
+  //window.localStorage.setItem("minutes",minutes)
+}, 1000);
+}
+
+window.onload = function () {
+  //sec   = parseInt(window.localStorage.getItem("seconds"))
+  //min = parseInt(window.localStorage.getItem("minutes"))
+ 
+  if(<?php echo $timer;?> < 120){
+	//sec = sec -1;
+    //var fiveMinutes = 120;
+  //}else{
+    var fiveMinutes = <?php echo 120 - $timer;?>;
+	// if(<?php echo $response; ?> == 0){
+		// window.location.reload();
+	// }
+  //}
+    // var fiveMinutes = 60 * 5;
+  display = document.querySelector('#time');
+  startTimer(fiveMinutes, display);
+
+	setTimeout(function(){ location.reload() }, fiveMinutes*1000);
+}
+	
+};
+
+
+
+
+
+//localStorage.clear();
+<!-- var timer; -->
+<!-- function startTimer(duration, display) { -->
+    <!-- timer = duration - 1; -->
+    <!-- var minutes, seconds; -->
+    <!-- setInterval(function () { -->
+        <!-- minutes = parseInt(timer / 60, 10) -->
+        <!-- seconds = parseInt(timer % 60, 10); -->
+
+        <!-- minutes = minutes < 10 ? "0" + minutes : minutes; -->
+        <!-- seconds = seconds < 10 ? "0" + seconds : seconds; -->
+
+        <!-- display.textContent = minutes + ":" + seconds; -->
+
+        <!-- if (--timer < 0) { -->
+            <!-- timer = duration; -->
+        <!-- } -->
+		<!-- if (timer <= 44 && timer == 44) { -->
+    <!-- $(".myBtn").attr('disabled','disabled'); -->
+    <!-- $(".myBtn").addClass('btnDisable').removeClass("btnEnable"); -->
+    <!-- //$("#myTimer").fadeTo(2500, 0); -->
+    <!-- myBtn.innerHTML = "Can't click now"; -->
+    <!-- return; -->
+  <!-- }else if(timer > 45 && timer == 59) { -->
+  <!-- $(".myBtn").removeAttr('disabled'); -->
+    <!-- $(".myBtn").addClass('btnEnable').removeClass("btnDisable"); -->
+    <!-- //$("#myTimer").fadeTo(2500, 0); -->
+    <!-- myBtn.innerHTML = "click now"; -->
+    <!-- return; -->
+	<!-- } -->
+    <!-- }, 1000); -->
+	
+<!-- } -->
+
+<!-- function resetTimer() { -->
+  <!-- timer = 60 * 1; -->
+   
+<!-- } -->
+
+<!-- window.onload = function () { -->
+    <!-- fiveMinutes = 60 * 1, -->
+        <!-- display = document.querySelector('#time'); -->
+    <!-- startTimer(fiveMinutes, display); -->
+   
+<!-- }; -->
+
+
+</script>
+</body>
+</html>
